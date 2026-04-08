@@ -48,8 +48,9 @@ def call_gemini(dream, model_target):
     )
     
     response = client.models.generate_content(
-        model="gemini-1.5-flash", # Or gemini-2.0-flash in 2026
-        contents=prompt_instruction
+    model="gemini-2.0-flash", 
+    contents=prompt_instruction
+)
     )
     return response.text
 
