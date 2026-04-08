@@ -6,12 +6,12 @@ from google.genai import types
 st.set_page_config(page_title="Dream Architect Pro", page_icon="🌙", layout="wide")
 
 # --- 2. THE AI ENGINE SETUP ---
-# We keep this as simple as possible to avoid handshake errors
 try:
     if "GEMINI_API_KEY" in st.secrets:
+        # We initialize the client with the 2026 standard library
         client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
     else:
-        st.error("⚠️ API Key missing! Check your Streamlit Secrets.")
+        st.error("⚠️ API Key missing! Add GEMINI_API_KEY to your Secrets.")
 except Exception as e:
     st.error(f"⚠️ Connection Error: {e}")
 
@@ -27,46 +27,53 @@ with st.sidebar:
     lang_choice = st.selectbox("Language", list(languages.keys()))
     t = languages[lang_choice]
     st.markdown("---")
-    st.info("Using Stable Gemini Engine")
+    # In 2026, 'gemini-flash' is the universal stable ID
+    st.info("Engine: Gemini 3 Flash (Stable)")
 
 # --- 5. MAIN INTERFACE ---
 st.title(t["title"])
 
 with st.container(border=True):
     dream_input = st.text_area("✍️", placeholder=t["place"], height=150)
-    target_model = st.selectbox("Target AI", ["Midjourney", "DALL-E", "Sora", "Flux"])
-    creativity = st.slider("Creativity", 0.0, 1.0, 0.7)
+    target_model = st.selectbox("Target AI", ["Midjourney v8", "Sora 3.1", "Flux.2 Pro", "DALL-E 4"])
+    creativity = st.slider("Creativity Level", 0.0, 1.0, 0.7)
 
-# --- 6. GEMINI LOGIC (Ultra-Stable Version) ---
+# --- 6. GEMINI LOGIC (Using 2026 Stable ID) ---
 def call_gemini(dream, model_target, temp):
     prompt_instruction = (
-        f"Create a professional image prompt for {model_target} based on this dream: {dream}. "
-        "Make it cinematic and detailed. Return only the prompt."
+        f"You are a professional Prompt Engineer for {model_target}. "
+        f"The user had this dream: '{dream}'. "
+        "Expand this into a master-level cinematic image generation prompt. "
+        "Return ONLY the final prompt text."
     )
     
     try:
-        # Using the standard stable alias. 
-        # Even in 2026, this name is kept as a 'pointer' for backward compatibility.
+        # 'gemini-flash' is the correct 2026 stable name for the v1 API
         response = client.models.generate_content(
-            model="gemini-1.5-flash", 
+            model="gemini-flash", 
             contents=prompt_instruction,
-            config=types.GenerateContentConfig(temperature=temp)
+            config=types.GenerateContentConfig(
+                temperature=temp
+            )
         )
         return response.text
     except Exception as e:
-        # Final fallback: Try the most basic model name possible
+        # If even that fails, we try the 'gemini-pro' alias
         try:
-            response = client.models.generate_content(model="gemini-pro", contents=prompt_instruction)
+            response = client.models.generate_content(
+                model="gemini-pro", 
+                contents=prompt_instruction
+            )
             return response.text
         except:
-            return f"Error: {e}"
+            return f"Architectural Error: {e}"
 
 # --- 7. EXECUTION ---
 if st.button(t["btn"], type="primary", use_container_width=True):
     if dream_input:
-        with st.spinner("Processing..."):
-            result = call_gemini(dream_input, target_model, creativity)
+        with st.spinner("Analyzing Dream..."):
+            final_result = call_gemini(dream_input, target_model, creativity)
             st.success(t["success"])
-            st.code(result, language="text")
+            st.code(final_result, language="text")
     else:
-        st.warning("Please enter a dream!")
+        st.warning("Please describe your dream first!")
