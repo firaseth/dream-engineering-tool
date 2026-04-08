@@ -64,4 +64,4 @@ def call_gemini(dream, model_target, temp):
     try:
         # Using the March/April 2026 Model String
         response = client.models.generate_content(
-            model="gemini-3-flash-preview
+            model="gemini-3-flash-preview",
