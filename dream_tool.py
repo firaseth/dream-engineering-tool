@@ -43,8 +43,16 @@ def call_gemini(dream, model_target):
         f"You are a professional Prompt Engineer for {model_target}. "
         f"The user has this dream: '{dream}'. "
         "Expand this into a highly detailed, cinematic prompt. "
-        "Include lighting, camera lens (e.g. 35mm), and textures. "
+        "Include lighting, camera lens, and textures. "
         "Return ONLY the final prompt text. No conversational filler."
+    )
+    
+    # Notice the brackets here: one starts at (.models and ends at the very bottom
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt_instruction
+    )
+    return response.text
     )
     
     response = client.models.generate_content(
