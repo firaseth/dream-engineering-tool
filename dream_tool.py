@@ -8,14 +8,13 @@ st.set_page_config(page_title="Dream Architect Pro v3", page_icon="🌙", layout
 # --- 2. THE AI ENGINE SETUP ---
 try:
     if "GEMINI_API_KEY" in st.secrets:
-        # Initializing the latest Google GenAI Client
         client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
     else:
         st.error("⚠️ API Key missing! Add GEMINI_API_KEY to your Secrets.")
 except Exception as e:
     st.error(f"⚠️ Connection Error: {e}")
 
-# --- 3. GLOBAL TRANSLATIONS (10 Languages) ---
+# --- 3. GLOBAL TRANSLATIONS ---
 languages = {
     "English": {"title": "🌙 AI Dream Architect", "btn": "Engineer Prompt", "success": "Analysis Complete!", "place": "Describe your dream...", "side": "Settings"},
     "العربية": {"title": "🌙 مهندس الأحلام الذكي", "btn": "هندسة المطالبة", "success": "تم التحليل!", "place": "صف حلمك هنا...", "side": "الإعدادات"},
@@ -34,9 +33,7 @@ with st.sidebar:
     lang_choice = st.selectbox("Select Language / اختر اللغة", list(languages.keys()))
     t = languages[lang_choice]
     st.markdown("---")
-    st.markdown("### Model Information")
     st.info("Core: Gemini 3 Flash")
-    st.caption("v3.1.0-Release-2026")
 
 # --- 5. MAIN INTERFACE ---
 st.title(t["title"])
@@ -46,22 +43,39 @@ with st.container(border=True):
     
     col1, col2 = st.columns(2)
     with col1:
-        target_model = st.selectbox("Target Image Generator", ["Midjourney v8", "Sora 3", "Flux.2 Pro", "DALL-E 4"])
+        target_model = st.selectbox("Target AI", ["Midjourney v8", "Sora 3", "Flux.2 Pro", "DALL-E 4"])
     with col2:
-        # Creativity now maps to Gemini 3's temperature logic
-        creativity = st.slider("Architect Creativity", 0.0, 1.0, 0.7)
+        creativity = st.slider("Creativity", 0.0, 1.0, 0.7)
 
-# --- 6. GEMINI 3 LOGIC ---
+# --- 6. GEMINI 3 LOGIC (Fixed Brackets) ---
 def call_gemini(dream, model_target, temp):
     prompt_instruction = (
         f"You are a professional Prompt Engineer for {model_target}. "
         f"The user describes this dream: '{dream}'. "
         "Expand this into a master-level cinematic image generation prompt. "
-        "Include lighting, atmospheric effects, specific textures, and camera settings. "
-        "Return ONLY the final prompt text. No introduction or closing remarks."
+        "Return ONLY the final prompt text. No filler."
     )
     
     try:
-        # Using the March/April 2026 Model String
+        # We open the main parenthesis here
         response = client.models.generate_content(
-            model="gemini-3-flash-preview",
+            model="gemini-3-flash-preview", 
+            contents=prompt_instruction,
+            config=types.GenerateContentConfig(
+                temperature=temp,
+                thinking_level="MEDIUM" if temp > 0.5 else "LOW"
+            ) # Closes config
+        ) # Closes generate_content <--- THIS WAS MISSING
+        return response.text
+    except Exception as e:
+        return f"Error: {e}"
+
+# --- 7. EXECUTION ---
+if st.button(t["btn"], type="primary", use_container_width=True):
+    if dream_input:
+        with st.spinner("Processing..."):
+            final_result = call_gemini(dream_input, target_model, creativity)
+            st.success(t["success"])
+            st.code(final_result, language="text")
+    else:
+        st.warning("Please enter a dream description!")
