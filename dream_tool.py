@@ -9,10 +9,29 @@ st.set_page_config(page_title="Dream Architect Pro", page_icon="🌙", layout="w
 try:
     if "GEMINI_API_KEY" in st.secrets:
         client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+        
+        # --- AUTO-DETECT MODELS ---
+        # This part finds which models are actually available to your account
+        available_models = [m.name for m in client.models.list() if "generateContent" in m.supported_generation_methods]
+        
+        # We look for the best 'Flash' model available in your list
+        # Priority: 3.1 -> 3.0 -> 2.0 -> 1.5
+        best_model = None
+        for target in ["gemini-3.1-flash", "gemini-3-flash", "gemini-2.0-flash", "gemini-1.5-flash"]:
+            match = next((m for m in available_models if target in m), None)
+            if match:
+                best_model = match
+                break
+        
+        if not best_model and available_models:
+            best_model = available_models[0] # Fallback to first available
+            
     else:
         st.error("⚠️ API Key missing! Add GEMINI_API_KEY to your Secrets.")
+        best_model = None
 except Exception as e:
     st.error(f"⚠️ Connection Error: {e}")
+    best_model = None
 
 # --- 3. GLOBAL TRANSLATIONS ---
 languages = {
@@ -33,7 +52,7 @@ with st.sidebar:
     lang_choice = st.selectbox("Select Language / اختر اللغة", list(languages.keys()))
     t = languages[lang_choice]
     st.markdown("---")
-    st.info("Core Engine: Gemini Flash (Latest)")
+    st.info(f"Connected to: {best_model.split('/')[-1] if best_model else 'None'}")
 
 # --- 5. MAIN INTERFACE ---
 st.title(t["title"])
@@ -47,8 +66,11 @@ with st.container(border=True):
     with col2:
         creativity = st.slider("Creativity Level", 0.0, 1.0, 0.7)
 
-# --- 6. GEMINI LOGIC (Using the Stable Alias) ---
+# --- 6. GEMINI LOGIC (Auto-Detected Model) ---
 def call_gemini(dream, model_target, temp):
+    if not best_model:
+        return "Error: No compatible Gemini models found for this API key."
+        
     prompt_instruction = (
         f"You are a professional Prompt Engineer for {model_target}. "
         f"The user had this dream: '{dream}'. "
@@ -58,17 +80,14 @@ def call_gemini(dream, model_target, temp):
     )
     
     try:
-        # We are using the "flash" alias which is the most reliable model string
         response = client.models.generate_content(
-            model="gemini-1.5-flash", 
+            model=best_model, 
             contents=prompt_instruction,
-            config=types.GenerateContentConfig(
-                temperature=temp
-            )
+            config=types.GenerateContentConfig(temperature=temp)
         )
         return response.text
     except Exception as e:
-        return f"Architectural Error: {e}"
+        return f"Generation Error: {e}"
 
 # --- 7. EXECUTION ---
 if st.button(t["btn"], type="primary", use_container_width=True):
