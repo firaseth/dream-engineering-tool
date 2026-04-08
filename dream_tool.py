@@ -3,7 +3,7 @@ from google import genai
 from google.genai import types
 
 # --- 1. PAGE CONFIGURATION ---
-st.set_page_config(page_title="Dream Architect Pro v3", page_icon="🌙", layout="wide")
+st.set_page_config(page_title="Dream Architect v3.1", page_icon="🌙", layout="wide")
 
 # --- 2. THE AI ENGINE SETUP ---
 try:
@@ -33,7 +33,8 @@ with st.sidebar:
     lang_choice = st.selectbox("Select Language / اختر اللغة", list(languages.keys()))
     t = languages[lang_choice]
     st.markdown("---")
-    st.info("Core: Gemini 3 Flash")
+    st.info("Core Engine: Gemini 3 Flash")
+    st.caption("v3.1 Stable Build")
 
 # --- 5. MAIN INTERFACE ---
 st.title(t["title"])
@@ -45,37 +46,51 @@ with st.container(border=True):
     with col1:
         target_model = st.selectbox("Target AI", ["Midjourney v8", "Sora 3", "Flux.2 Pro", "DALL-E 4"])
     with col2:
-        creativity = st.slider("Creativity", 0.0, 1.0, 0.7)
+        creativity = st.slider("Creativity Level", 0.0, 1.0, 0.7)
 
-# --- 6. GEMINI 3 LOGIC (Fixed Brackets) ---
+# --- 6. GEMINI 3 LOGIC (Strict Pydantic Validation Fixed) ---
 def call_gemini(dream, model_target, temp):
     prompt_instruction = (
         f"You are a professional Prompt Engineer for {model_target}. "
-        f"The user describes this dream: '{dream}'. "
+        f"The user had this dream: '{dream}'. "
         "Expand this into a master-level cinematic image generation prompt. "
-        "Return ONLY the final prompt text. No filler."
+        "Include specific lighting, camera angles, and textures. "
+        "Return ONLY the final prompt text. No conversational filler."
     )
     
     try:
-        # We open the main parenthesis here
+        # Constructing the config object exactly as the 2026 SDK requires
         response = client.models.generate_content(
-            model="gemini-3-flash-preview", 
+            model="gemini-3.1-flash-preview", 
             contents=prompt_instruction,
             config=types.GenerateContentConfig(
                 temperature=temp,
-                thinking_level="MEDIUM" if temp > 0.5 else "LOW"
-            ) # Closes config
-        ) # Closes generate_content <--- THIS WAS MISSING
+                # Fixed: ThinkingLevel must be lower-case string per SDK 1.2+
+                thinking_config=types.ThinkingConfig(
+                    thinking_level="medium" if temp > 0.5 else "low",
+                    include_thoughts=False
+                )
+            )
+        )
         return response.text
     except Exception as e:
-        return f"Error: {e}"
+        # Safety Fallback: If thinking config fails, run standard generation
+        try:
+            response = client.models.generate_content(
+                model="gemini-3.1-flash-preview",
+                contents=prompt_instruction,
+                config=types.GenerateContentConfig(temperature=temp)
+            )
+            return response.text
+        except:
+            return f"Architectural Error: {e}"
 
 # --- 7. EXECUTION ---
 if st.button(t["btn"], type="primary", use_container_width=True):
     if dream_input:
-        with st.spinner("Processing..."):
+        with st.spinner("Gemini 3 is synthesizing..."):
             final_result = call_gemini(dream_input, target_model, creativity)
             st.success(t["success"])
             st.code(final_result, language="text")
     else:
-        st.warning("Please enter a dream description!")
+        st.warning("Please describe your dream first!")
