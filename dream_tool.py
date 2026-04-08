@@ -1,34 +1,44 @@
 import streamlit as st
 
-# 1. Page Config
-st.set_page_config(page_title="Dream Engineering 2026", page_icon="🌙")
+# --- CONFIG & TRANSLATION DICTIONARY ---
+languages = {
+    "English": {"title": "🌙 Dream-to-Prompt Tool", "input": "Describe your dream:", "btn": "Generate", "model": "Target Model:"},
+    "Spanish": {"title": "🌙 Herramienta de Sueños", "input": "Describe tu sueño:", "btn": "Generar", "model": "Modelo:"},
+    "Arabic": {"title": "🌙 أداة هندسة الأحلام", "input": "صف حلمك:", "btn": "توليد", "model": "النموذج:"},
+    "French": {"title": "🌙 Outil d'Ingénierie des Rêves", "input": "Décrivez votre rêve:", "btn": "Générer", "model": "Modèle:"}
+}
 
-st.title("🌙 Dream-to-Prompt Engineering Tool")
+# --- SIDEBAR (Language Selection) ---
+st.sidebar.title("Settings / الإعدادات")
+lang = st.sidebar.selectbox("Choose Language:", list(languages.keys()))
+t = languages[lang]
 
-# 2. Input Section
-dream_text = st.text_area("✍️ Describe your dream:")
+# --- MAIN UI ---
+st.title(t["title"])
+
+dream_text = st.text_area(t["input"])
+
 col1, col2 = st.columns(2)
 with col1:
-    target_model = st.selectbox("🎯 Model:", ["Midjourney v8", "Sora 2", "Veo 3.1"])
+    target_model = st.selectbox(t["model"], ["Midjourney v8", "Sora 2", "Veo 3.1", "Flux.1"])
 with col2:
-    style_preset = st.selectbox("🎨 Style:", ["Cinematic", "Cyberpunk", "Surrealism"])
+    # --- EXPANDED STYLE LIST ---
+    style_preset = st.selectbox("Style / النمط:", [
+        "Cinematic", "Cyberpunk", "Surrealism", "Hyper-Realistic", 
+        "Vintage Film", "Studio Ghibli", "Oil Painting", "Noir"
+    ])
 
-# 3. The "Smart" Function (This is the part we improved)
+# --- SMART ENGINE ---
 def engineer_prompt(text, model, style):
-    # This prevents double-typing if your dream already has pro terms
-    if "--v" in text or "8k" in text:
-        return f"{text} | Refined with {style} for {model}"
-    
-    # Standard engineering for simple dreams
-    return (f"{text}, {style} style, shot on 35mm lens, f/1.8, "
-            f"volumetric lighting, ray-traced reflections, --ar 16:9 --v 8")
+    # Professional prompt structure
+    return (f"{text}, {style} style, high-end production, "
+            f"volumetric lighting, ray-tracing, 8k, --v 8")
 
-# 4. Action Button
-if st.button("🚀 Generate Engineered Prompt"):
+if st.button(t["btn"]):
     if dream_text:
         result = engineer_prompt(dream_text, target_model, style_preset)
         st.divider()
-        st.subheader("Final Result:")
+        st.subheader("Engineered Prompt:")
         st.code(result)
     else:
-        st.warning("Please enter your dream first!")
+        st.warning("Input required!")
