@@ -1,3 +1,5 @@
+![App Screenshot](<img width="1366" height="728" alt="image" src="https://github.com/user-attachments/assets/24396193-511e-4baa-9c1f-90efdf62369f" />
+)
 # 🌙 AI Dream Prompt
 
 A professional engineering tool that transforms dream descriptions into high-fidelity, cinematic prompts for **Midjourney, Sora, Flux, and DALL-E**.
