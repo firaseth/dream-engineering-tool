@@ -1,10 +1,17 @@
-# 🌙 Dream-to-Prompt Engineering Tool
-A professional AI prompt generator for 2026 models like Sora, Midjourney v8, and Veo.
+# 🌙 AI Dream Prompt
 
-## How to run locally
-1. Install Python.
-2. Run `pip install -r requirements.txt`.
-3. Run `streamlit run app.py`.
+An advanced AI-powered engineering tool that transforms vague dream descriptions into high-fidelity, cinematic prompts for **Midjourney, Sora, Flux, and DALL-E**.
 
-## Deployment
-This app is designed to be deployed via [Streamlit Community Cloud](https://streamlit.io/cloud).
+Built with **Streamlit** and powered by the **OpenRouter API** (featuring GLM-5 and other free models).
+
+---
+
+## 🚀 Deployment Options
+
+### 1. Integrated AI Setup (Streamlit Cloud)
+The easiest way to run the app globally.
+1. Fork this repository.
+2. Go to [Streamlit Cloud](https://share.streamlit.io/) and connect your fork.
+3. In the Streamlit App Settings, go to **Secrets** and add your OpenRouter API Key:
+   ```toml
+   OPENROUTER_API_KEY = "your_key_here"
