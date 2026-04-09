@@ -1,6 +1,6 @@
 # 🌙 AI Dream Prompt
 
-A high-performance "vibe-coding" engineering tool that transforms dream descriptions into professional, cinematic prompts for **Midjourney v8, Sora 3, Flux.2, and DALL-E 4**.
+A high-performance engineering tool that transforms dream descriptions into professional, cinematic prompts for **Midjourney v8, Sora 3, Flux.2, and DALL-E 4**.
 
 Built with **Streamlit** and powered by the **OpenRouter API** for universal AI model access.
 
