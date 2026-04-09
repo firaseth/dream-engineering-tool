@@ -1,4 +1,4 @@
-![App Screenshot](your_image_name.png)
+![App Screenshot](dreamai.png)
 # 🌙 AI Dream Prompt
 
 A professional engineering tool that transforms dream descriptions into high-fidelity, cinematic prompts for **Midjourney, Sora, Flux, and DALL-E**.
