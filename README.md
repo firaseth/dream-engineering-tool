@@ -23,5 +23,23 @@ Follow these steps to run the app locally on your own computer.
 
 #### **Step 1: Clone the Repository**
 ```bash
+Step 2: Create a Virtual Environment
+Windows: python -m venv venv then .\venv\Scripts\activate
+
+Mac/Linux: python3 -m venv venv then source venv/bin/activate
+Step 3: Install Dependencies
+Bash
+pip install streamlit openai
+Step 4: Configure Local Secrets
+Create a folder named .streamlit in the project root.
+
+Create a file named secrets.toml inside that folder.
+
+Add your key: OPENROUTER_API_KEY = "your_key_here"
+
+Step 5: Run the App
+Bash
+streamlit run dream_tool.py
+
 git clone [https://github.com/firaseth/dream-engineering-tool.git](https://github.com/firaseth/dream-engineering-tool.git)
 cd dream-engineering-tool
