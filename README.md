@@ -1,17 +1,18 @@
 # 🌙 AI Dream Prompt
 
-An advanced AI-powered engineering tool that transforms vague dream descriptions into high-fidelity, cinematic prompts for **Midjourney, Sora, Flux, and DALL-E**.
+A high-performance "vibe-coding" engineering tool that transforms dream descriptions into professional, cinematic prompts for **Midjourney v8, Sora 3, Flux.2, and DALL-E 4**.
 
-Built with **Streamlit** and powered by the **OpenRouter API** (featuring GLM-5 and other free models).
+Built with **Streamlit** and powered by the **OpenRouter API** for universal AI model access.
 
 ---
 
 ## 🚀 Deployment Options
 
-### 1. Integrated AI Setup (Streamlit Cloud)
-The easiest way to run the app globally.
-1. Fork this repository.
-2. Go to [Streamlit Cloud](https://share.streamlit.io/) and connect your fork.
-3. In the Streamlit App Settings, go to **Secrets** and add your OpenRouter API Key:
+### 1. Cloud Deployment (Streamlit Community Cloud)
+The fastest way to host your app globally for free.
+1. Fork this repository: `https://github.com/firaseth/dream-engineering-tool`.
+2. Login to [Streamlit Cloud](https://share.streamlit.io/).
+3. Connect your fork and deploy `app.py`.
+4. **Important:** Go to **App Settings > Secrets** and paste your API key:
    ```toml
-   OPENROUTER_API_KEY = "your_key_here"
+   OPENROUTER_API_KEY = "your_openrouter_key_here"
