@@ -1,5 +1,4 @@
-![App Screenshot](<img width="1366" height="728" alt="image" src="https://github.com/user-attachments/assets/24396193-511e-4baa-9c1f-90efdf62369f" />
-)
+![App Screenshot](your_image_name.png)
 # 🌙 AI Dream Prompt
 
 A professional engineering tool that transforms dream descriptions into high-fidelity, cinematic prompts for **Midjourney, Sora, Flux, and DALL-E**.
@@ -42,6 +41,8 @@ Add your key: OPENROUTER_API_KEY = "your_key_here"
 Step 5: Run the App
 Bash
 streamlit run dream_tool.py
+<img width="1366" height="728" alt="image" src="https://github.com/user-attachments/assets/0455d2c0-0c9a-4d44-9174-6fd49483f130" />
+
 
 git clone [https://github.com/firaseth/dream-engineering-tool.git](https://github.com/firaseth/dream-engineering-tool.git)
 cd dream-engineering-tool
