@@ -9,10 +9,9 @@ Built with **Streamlit** and powered by the **OpenRouter API** for universal AI 
 ## 🚀 Deployment Options
 
 ### 1. Cloud Deployment (Streamlit Community Cloud)
-The fastest way to host your app globally for free.
 1. Fork this repository: `https://github.com/firaseth/dream-engineering-tool`.
 2. Login to [Streamlit Cloud](https://share.streamlit.io/).
-3. Connect your fork and deploy `app.py`.
+3. Connect your fork and deploy **`dream_tool.py`**.
 4. **Important:** Go to **App Settings > Secrets** and paste your API key:
    ```toml
    OPENROUTER_API_KEY = "your_openrouter_key_here"
