@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 
 # --- 1. PAGE CONFIGURATION ---
-st.set_page_config(page_title="Dream Architect Global", page_icon="🌙", layout="wide")
+st.set_page_config(page_title="Dream Architect v5", page_icon="🌙", layout="wide")
 
 # --- 2. OPENROUTER SETUP ---
 try:
@@ -12,72 +12,55 @@ try:
             api_key=st.secrets["OPENROUTER_API_KEY"],
         )
     else:
-        st.error("⚠️ API Key missing! Add OPENROUTER_API_KEY to your Secrets.")
+        st.error("⚠️ Add OPENROUTER_API_KEY to your Streamlit Secrets!")
 except Exception as e:
     st.error(f"⚠️ Connection Error: {e}")
 
-# --- 3. GLOBAL TRANSLATIONS ---
-languages = {
-    "English": {"title": "🌙 AI Dream Architect", "btn": "Engineer Prompt", "success": "Analysis Complete!", "place": "Describe your dream..."},
-    "العربية": {"title": "🌙 مهندس الأحلام الذكي", "btn": "هندسة المطالبة", "success": "تم التحليل!", "place": "صف حلمك هنا..."},
-    "中文": {"title": "🌙 AI 梦境建筑师", "btn": "生成提示词", "success": "分析完成！", "place": "描述你的梦境..."}
+# --- 3. UPDATED MODEL LIST (GLM-5 Edition) ---
+model_options = {
+    "GLM-5.1 (Latest/Fast)": "z-ai/glm-5.1",
+    "GLM-5-Air (Efficient)": "z-ai/glm-5-air:free",
+    "GLM-5-V Turbo (Visual)": "z-ai/glm-5v-turbo",
+    "Llama 3.3 70B (Reliable)": "meta-llama/llama-3.3-70b-instruct:free"
 }
 
-# --- 4. SIDEBAR ---
+# --- 4. UI ---
 with st.sidebar:
-    lang_choice = st.selectbox("Select Language", list(languages.keys()))
-    t = languages[lang_choice]
-    st.markdown("---")
-    # You can change this to any free model like "google/gemini-2.0-flash-exp:free" 
-    # or "mistralai/mistral-7b-instruct:free" or "thu-coai/glm-4-9b-chat"
-    model_choice = st.selectbox("Select AI Model", [
-        "google/gemini-2.0-flash-exp:free",
-        "mistralai/mistral-7b-instruct:free",
-        "openchat/openchat-7b:free",
-        "thu-coai/glm-4-9b-chat"
-    ])
-    st.info(f"Model: {model_choice}")
+    st.title("AI Settings")
+    selected_name = st.selectbox("Choose Engine", list(model_options.keys()))
+    model_choice = model_options[selected_name]
+    st.info(f"Model ID: {model_choice}")
 
-# --- 5. MAIN INTERFACE ---
-st.title(t["title"])
+st.title("🌙 AI Dream Architect Pro")
 
 with st.container(border=True):
-    dream_input = st.text_area("✍️", placeholder=t["place"], height=150)
-    
+    dream_input = st.text_area("✍️ Describe the dream...", height=150)
     col1, col2 = st.columns(2)
     with col1:
-        target_model = st.selectbox("Target Image Generator", ["Midjourney v6", "DALL-E 3", "Flux.1", "Sora"])
+        target_gen = st.selectbox("Target AI", ["Midjourney v8", "Sora 3.1", "Flux.2", "DALL-E 4"])
     with col2:
         creativity = st.slider("Creativity", 0.0, 1.0, 0.7)
 
-# --- 6. OPENROUTER LOGIC ---
-def call_ai(dream, target_gen, model_name, temp):
-    prompt_msg = (
-        f"You are a professional Prompt Engineer for {target_gen}. "
-        f"The user describes this dream: '{dream}'. "
-        "Expand this into a highly detailed, cinematic, and artistic prompt for image generation. "
-        "Return ONLY the final prompt text. No conversational filler."
-    )
-    
-    try:
-        completion = client.chat.completions.create(
-            model=model_name,
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant that creates image prompts."},
-                {"role": "user", "content": prompt_msg}
-            ],
-            temperature=temp
-        )
-        return completion.choices[0].message.content
-    except Exception as e:
-        return f"Error: {e}"
-
-# --- 7. EXECUTION ---
-if st.button(t["btn"], type="primary", use_container_width=True):
+# --- 5. EXECUTION ---
+if st.button("Engineer Prompt", type="primary", use_container_width=True):
     if dream_input:
-        with st.spinner("AI is architecting your dream..."):
-            final_result = call_ai(dream_input, target_model, model_choice, creativity)
-            st.success(t["success"])
-            st.code(final_result, language="text")
+        with st.spinner(f"GLM-5 is imagining..."):
+            try:
+                completion = client.chat.completions.create(
+                    model=model_choice,
+                    messages=[
+                        {"role": "system", "content": "You are a master of visual prompt engineering."},
+                        {"role": "user", "content": f"Create a cinematic {target_gen} prompt for: {dream_input}"}
+                    ],
+                    temperature=creativity,
+                    extra_headers={
+                        "HTTP-Referer": "https://dream-architect.streamlit.app", 
+                        "X-Title": "Dream Architect Pro"
+                    }
+                )
+                st.success("Analysis Complete!")
+                st.code(completion.choices[0].message.content, language="text")
+            except Exception as e:
+                st.error(f"Model Error: {e}")
     else:
-        st.warning("Please enter a dream description!")
+        st.warning("Please enter a dream first.")
